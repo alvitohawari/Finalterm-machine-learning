@@ -3,7 +3,7 @@
 **Author**: Alvito Kiflan Hawari  
 **NIM**: 1103220235  
 
-Repositori ini merangkum dua proyek utama dari mata kuliah Machine Learning:
+Repositori ini merangkum proyek utama dari mata kuliah Machine Learning:
 
 ---
 
