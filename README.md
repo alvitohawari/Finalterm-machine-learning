@@ -5,9 +5,6 @@
 
 Repositori ini merangkum dua proyek utama dari mata kuliah Machine Learning:
 
-1. **Final Term — Fish Image Dataset (CNN & Transfer Learning, PyTorch)**
-2. **UTS/Midterm — Fraud Detection & Analysis (XGBoost, LightGBM, TensorFlow DNN, K-Means)**
-
 ---
 
 ## 1. Fish Image Dataset (CNN & Transfer Learning)
