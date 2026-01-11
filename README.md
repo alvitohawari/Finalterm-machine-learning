@@ -10,27 +10,6 @@ Repositori ini merangkum dua proyek utama dari mata kuliah Machine Learning:
 
 ---
 
-## 📋 Table of Contents
-- [1. Fish Image Dataset (CNN & Transfer Learning)](#1-fish-image-dataset-cnn--transfer-learning)
-  - [Ringkasan](#ringkasan)
-  - [Dataset & Struktur Folder](#dataset--struktur-folder)
-  - [Metodologi](#metodologi)
-  - [Hasil Eksperimen](#hasil-eksperimen)
-  - [Cara Menjalankan](#cara-menjalankan)
-- [2. Fraud Detection & Analysis (UTS/Midterm)](#2-fraud-detection--analysis-utsmidterm)
-  - [Project Overview](#-project-overview)
-  - [Dataset Information](#-dataset-information)
-  - [Methodology](#-methodology)
-  - [Models Implemented](#-models-implemented)
-  - [Results & Performance](#-results--performance)
-  - [Key Findings](#-key-findings)
-  - [Project Structure](#-project-structure)
-  - [Installation & Setup](#-installation--setup)
-  - [How to Run](#-how-to-run)
-  - [Conclusions](#-conclusions)
-
----
-
 ## 1. Fish Image Dataset (CNN & Transfer Learning)
 
 ### Final Term Machine Learning — Fish Image Dataset (CNN & Transfer Learning)
