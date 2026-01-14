@@ -335,101 +335,105 @@ Raw Data → Missing Value Handling → Categorical Encoding → Feature Scaling
 ---
 
 ## 3. Regression Pipeline (Continuous Value Prediction)
-
-### Final Term Machine Learning — Regression Pipeline
-
-**Author**: Alvito Kiflan Hawari (1103220235)  
-**Notebook**: `no2ML.ipynb`
-
----
+Final Term Machine Learning — Regression Pipeline  
+Author: **Alvito Kiflan Hawari (1103220235)**  
+Notebook: **tugas_regresi_end_to_end (2).ipynb**
 
 ## Ringkasan
-Notebook ini mengimplementasikan **end-to-end regression pipeline** untuk memprediksi **nilai kontinu** dari sekumpulan fitur numerik menggunakan **machine learning**.
+Notebook ini mengimplementasikan *end-to-end regression pipeline* untuk memprediksi nilai kontinu (target numerik) dari sekumpulan fitur numerik menggunakan machine learning.
 
-Workflow yang dibangun mencakup seluruh tahapan utama regresi:
-- pemuatan dan eksplorasi data,
-- pembersihan data (duplikasi, missing value, outlier),
-- pemisahan fitur dan target,
-- pelatihan model regresi,
-- evaluasi performa menggunakan metrik regresi standar.
+Pipeline mencakup tahapan utama regresi:
 
-Model utama yang digunakan adalah **LightGBM Regressor**, yang dikenal efisien dan kuat untuk data tabular numerik.
-
----
+- pemuatan dataset (unduh via Google Drive menggunakan `gdown`),
+- pengecekan awal ukuran & dimensi data,
+- pembersihan data (duplikasi, missing value pada target),
+- *outlier handling* pada fitur menggunakan *quantile clipping*,
+- pembagian data train/test,
+- pemodelan dengan **XGBoost Regressor (XGBRegressor)** dalam *scikit-learn Pipeline*,
+- *feature selection* (SelectKBest),
+- *hyperparameter tuning* dengan RandomizedSearchCV,
+- evaluasi menggunakan metrik regresi standar + visualisasi.
 
 ## Dataset & Struktur Data
-Dataset dimuat dari file CSV:
+Dataset diunduh dari Google Drive dan disimpan sebagai:
 
-```
-midterm-regresi-dataset.csv
-```
+- `midterm-regresi-dataset.csv`
 
-**Karakteristik dataset berdasarkan eksekusi notebook:**
-- **Target (y)**: kolom pertama dataset
-- **Fitur (X)**: seluruh kolom setelah target
-- Seluruh kolom dikonversi ke tipe numerik (`float`)
-- Dataset mengandung **duplikasi dan outlier** yang perlu ditangani sebelum modeling
+Karakteristik dataset berdasarkan implementasi notebook:
 
-Notebook mengasumsikan file dataset berada pada direktori yang sama dengan notebook.
+- Dataset **tidak memiliki header**.
+- **Target (y)**: kolom pertama (index 0). Di notebook diperlakukan sebagai numerik (`int`) dan dicontohkan sebagai “tahun / release year”.
+- **Fitur (X)**: seluruh kolom setelah target (index 1..akhir) dan dikonversi ke `float`.
+- Duplikasi dihapus dengan `drop_duplicates()`.
+- Missing value pada target dibuang (baris dengan `y` null), sementara missing pada fitur ditangani saat training dengan imputasi median.
 
----
+> Catatan lokasi file: di notebook `file_path` ditulis `'/content/midterm-regresi-dataset.csv'` (format umum Google Colab). Jika menjalankan di lokal, ubah `file_path` ke path di komputer Anda.
 
 ## Metodologi
-
 ### 1) Data Loading & Exploratory Check
-Data dibaca menggunakan `pandas.read_csv()` dan dilakukan pemeriksaan awal:
-- dimensi dataset (`shape`),
-- tampilan data awal (`head`) dan akhir (`tail`).
-
----
+- Unduh dataset menggunakan `gdown`.
+- Load CSV dengan `pandas.read_csv()`.
+- Cek dimensi dataset (`df.shape`) dan ukuran file.
 
 ### 2) Data Cleaning
-- **Duplicate handling** menggunakan `drop_duplicates()`
-- **Missing value checking** dengan `isna()`
-- **Outlier handling** pada target menggunakan percentile filtering (1%–99%)
+- **Duplicate handling**: `df.drop_duplicates()`
+- **Missing target**: buang baris dengan `y` kosong (`mask = y.notna()`)
 
----
+### 3) Train/Test Split
+- Split data menggunakan `train_test_split(test_size=0.2, random_state=42)`.
 
-### 3) Feature & Target Separation
-- **Target (y)**: kolom pertama dataset
-- **Features (X)**: seluruh kolom selain target
-- Data dibagi menjadi train dan test menggunakan `train_test_split`
+### 4) Outlier Handling (Feature Clipping)
+Outlier pada fitur ditangani dengan *quantile clipping* berbasis statistik data train:
 
----
+- batas bawah: quantile 1% (`0.01`)
+- batas atas : quantile 99% (`0.99`)
 
-### 4) Model Regression
-Model utama: **LightGBM Regressor**
+Clipping diterapkan ke `X_train` lalu batas yang sama digunakan untuk `X_test`.
 
-**Parameter utama:**
-- `n_estimators = 8000`
-- `learning_rate = 0.01`
-- `num_leaves = 128`
-- `subsample = 0.9`
-- `colsample_bytree = 0.9`
+### 5) Pipeline + Feature Selection + Model (XGBoost)
+Model dibangun sebagai pipeline:
 
----
+1. **SimpleImputer(strategy="median")** — imputasi missing value fitur  
+2. **SelectKBest(f_regression)** — seleksi fitur terbaik (nilai `k` dituning)  
+3. **XGBRegressor(objective="reg:squarederror")** — model regresi XGBoost  
+   - `tree_method="hist"` dan `predictor="cpu_predictor"` (fallback CPU)
+
+### 6) Hyperparameter Tuning
+- Validasi silang: `KFold(n_splits=5, shuffle=True, random_state=42)`
+- Tuning: `RandomizedSearchCV`
+  - `n_iter=10`
+  - `scoring="neg_root_mean_squared_error"`
+  - parameter yang dituning mencakup: `select__k`, `n_estimators`, `learning_rate`, `max_depth`, `subsample`, `colsample_bytree`, `min_child_weight`, `reg_alpha`, `reg_lambda`.
 
 ## Evaluasi Model
-Model dievaluasi menggunakan:
-- **MAE**
-- **RMSE**
+Evaluasi dilakukan pada *test set* dengan metrik:
+
+- **MSE** (Mean Squared Error)
+- **RMSE** (Root Mean Squared Error)
+- **MAE** (Mean Absolute Error)
 - **R² Score**
 
-Evaluasi dilakukan pada data test untuk mengukur generalisasi.
-
----
-
-## Kesimpulan
-Pipeline regresi berhasil diimplementasikan secara end-to-end dan memenuhi kriteria tugas:
-- preprocessing lengkap,
-- pemodelan regresi,
-- evaluasi metrik yang sesuai,
-- interpretasi hasil.
-
----
+Notebook juga membuat plot:
+- **Actual vs Predicted (Test)**
+- **Residual Plot (Test)**
 
 ## Cara Menjalankan
+### 1) Siapkan environment
 ```bash
-pip install pandas numpy scikit-learn lightgbm
-jupyter notebook no2ML.ipynb
+python -m venv .venv
+# Windows: .venv\Scripts\activate
+source .venv/bin/activate
+pip install -r requirements.txt
 ```
+
+### 2) Jalankan notebook
+```bash
+jupyter notebook "tugas_regresi_end_to_end (1).ipynb"
+```
+
+### 3) Pastikan dataset tersedia
+- Jika menjalankan di **Google Colab**, path `'/content/...'` umumnya sudah sesuai.
+- Jika menjalankan di **lokal**, ubah `file_path` ke lokasi dataset di komputer Anda.
+
+## Catatan
+- Notebook mengimpor `torch` untuk kebutuhan pengecekan lingkungan (GPU/CPU) pada cell pipeline. Jika Anda ingin dependensi lebih ringan, Anda dapat menghapus `import torch` di notebook dan menghapus `torch` dari `requirements.txt`.
