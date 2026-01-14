@@ -428,7 +428,7 @@ pip install -r requirements.txt
 
 ### 2) Jalankan notebook
 ```bash
-jupyter notebook "tugas_regresi_end_to_end (1).ipynb"
+jupyter notebook "tugas_regresi_end_to_end (2).ipynb"
 ```
 
 ### 3) Pastikan dataset tersedia
